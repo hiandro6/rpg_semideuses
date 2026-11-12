@@ -18,6 +18,8 @@ static void escolherPersonagem(Personagem *p) {
     }
     op = lerInteiro("Escolha (1-3): ", 1, 3);
     criarPersonagem(p, (ClassePersonagem)op);
+
+    mostrarApresentacao(p);
 }
 
 /* Linha de resumo mostrada depois de cada evento */
@@ -54,9 +56,9 @@ static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
                 pegarItem(f);
                 return;
             }
-            criarMonstro(&m, numeroFase, 2, f->fator);
+            criarMonstro(&m, numeroFase, MONSTROS_POR_FASE - 1, f->fator);
         } else {
-            sortearMonstroComum(&m, numeroFase, f->fator);
+            sortearMonstroComum(&m, numeroFase, f->fator, f->monstroUsado);
         }
 
         r = combate(p, &m);
@@ -89,7 +91,7 @@ static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
         printf("Uma fonte sagrada restaura sua vida!\n");
         break;
     case CASA_ARMADILHA:
-        dano = 10 + 5 * numeroFase;
+        dano = 5 * (numeroFase + 1) + p->vida / 10;
         if (dano > p->vida - 1) dano = p->vida - 1;   /* nunca mata */
         receberDano(p, dano);
         printf("Armadilha! Voce perde %d de vida.\n", dano);
