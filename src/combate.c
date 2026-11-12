@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include "combate.h"
 #include "dado.h"
+#include "interface.h"
 
 #define RECARGA_HABILIDADE 3
 #define DADO_FUGA_MIN 4        /* d6 >= 4 => 50% de chance */
+#define DELAY_TURNO 1.0        /* segundos entre as ações (0 para testar rápido) */
 
 /* ---------- Aplicação de dano (via ponteiro) ---------- */
 
@@ -37,25 +39,22 @@ int calcularDano(int ataque, int defesa) {
 
 /* ---------- Interface do combate ---------- */
 
-static void mostrarStatus(const Personagem *p, const Monstro *m) {
+/* Mostra a vida dos dois lados no formato atual/maxima */
+static void mostrarStatus(const Personagem *p, const Monstro *m,
+                          int vidaMaxMonstro) {
     printf("\n--------------------------------------\n");
     printf("%s: %d/%d PV\n", p->nome, p->vida, p->vidaMax);
-    printf("%s: %d PV\n", m->nome, m->vida);
+    printf("%s: %d/%d PV\n", m->nome, m->vida, vidaMaxMonstro);
     printf("--------------------------------------\n");
 }
 
 static AcaoCombate escolherAcao(const Personagem *p, int recarga) {
-    int op;
     printf("[1] Atacar  [2] Defender  [3] %s", p->habilidade);
     if (recarga > 0) {
         printf(" (recarga: %d)", recarga);
     }
-    printf("  [4] Fugir\nEscolha: ");
-    if (scanf("%d", &op) != 1) {
-        scanf("%*s");   /* descarta a entrada inválida */
-        return 0;
-    }
-    return (AcaoCombate)op;
+    printf("  [4] Fugir\n");
+    return (AcaoCombate)lerInteiro("Escolha: ", 1, 4);
 }
 
 /* ---------- Turnos ---------- */
@@ -111,7 +110,8 @@ static void turnoMonstro(Personagem *p, const Monstro *m, int defendendo) {
 /* ---------- Combate completo ---------- */
 
 ResultadoCombate combate(Personagem *p, Monstro *m) {
-    int recarga = 0;        /* turnos até poder usar a habilidade */
+    int vidaMaxMonstro = m->vida;   /* vida inicial = máxima do monstro */
+    int recarga = 0;                /* turnos até poder usar a habilidade */
     int defendendo;
     int dano, ataque;
     AcaoCombate acao;
@@ -120,7 +120,7 @@ ResultadoCombate combate(Personagem *p, Monstro *m) {
 
     while (p->vida > 0 && m->vida > 0) {
         defendendo = 0;
-        mostrarStatus(p, m);
+        mostrarStatus(p, m, vidaMaxMonstro);
         acao = escolherAcao(p, recarga);
 
         switch (acao) {
@@ -151,13 +151,14 @@ ResultadoCombate combate(Personagem *p, Monstro *m) {
             printf("A fuga falhou!\n");
             break;
         default:
-            printf("Opcao invalida! Escolha de 1 a 4.\n");
-            continue;       /* não gasta o turno */
+            continue;       /* não deve ocorrer: lerInteiro já valida */
         }
 
         if (m->vida <= 0) break;
 
+        esperar(DELAY_TURNO);               /* pausa antes do monstro agir */
         turnoMonstro(p, m, defendendo);
+        esperar(DELAY_TURNO);               /* pausa antes do próximo turno */
         if (recarga > 0) recarga--;
     }
 
