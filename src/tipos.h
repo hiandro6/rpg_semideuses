@@ -18,4 +18,20 @@ typedef struct {
     char habilidade[40];
 } Personagem;
 
+#define TAM_TABULEIRO 12
+
+typedef enum {
+    CASA_VAZIA,
+    CASA_COMBATE,
+    CASA_TESOURO,
+    CASA_CURA,
+    CASA_ARMADILHA,
+    CASA_MISSAO
+} TipoCasa;
+
+typedef struct {
+    TipoCasa tipo;
+    const char *nome;   /* texto exibido para o jogador */
+} Casa;
+
 #endif
