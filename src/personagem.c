@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "personagem.h"
 
 void criarPersonagem(Personagem *p, ClassePersonagem classe) {
@@ -44,4 +45,45 @@ void mostrarPersonagem(const Personagem *p) {
            p->agilidade, p->inteligencia, p->xp);
     printf("Arma: %s\nArmadura: %s\nHabilidade: %s\n\n",
            p->arma, p->armadura, p->habilidade);
+}
+
+/* Sobe um nível: aumenta atributos e recupera parte da vida */
+void subirNivel(Personagem *p) {
+    p->nivel++;
+    p->vidaMax += 10;
+    p->forca++;
+    p->defesa++;
+    p->vida += 10;
+    if (p->vida > p->vidaMax) p->vida = p->vidaMax;
+    printf("*** NIVEL %d! Vida max +10, Forca +1, Defesa +1 ***\n", p->nivel);
+}
+
+/* Soma XP e sobe de nível enquanto o total alcançar nivel * 50 */
+void ganharXP(Personagem *p, int xp) {
+    p->xp += xp;
+    while (p->xp >= p->nivel * 50) {
+        subirNivel(p);
+    }
+}
+
+/* Sorteia um atributo para receber bônus */
+void aplicarBonusAleatorio(Personagem *p) {
+    switch (rand() % 5) {
+    case 0: p->forca++;
+            printf("Bonus: Forca +1!\n"); break;
+    case 1: p->defesa++;
+            printf("Bonus: Defesa +1!\n"); break;
+    case 2: p->agilidade++;
+            printf("Bonus: Agilidade +1!\n"); break;
+    case 3: p->inteligencia++;
+            printf("Bonus: Inteligencia +1!\n"); break;
+    default: p->vidaMax += 5;
+             printf("Bonus: Vida maxima +5!\n"); break;
+    }
+}
+
+/* Recupera vida sem passar do máximo */
+void curar(Personagem *p, int quantidade) {
+    p->vida += quantidade;
+    if (p->vida > p->vidaMax) p->vida = p->vidaMax;
 }
