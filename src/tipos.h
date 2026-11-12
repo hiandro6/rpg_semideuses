@@ -56,7 +56,7 @@ typedef enum {
 } ResultadoCombate;
 
 #define NUM_FASES 3
-#define MONSTROS_POR_FASE 3
+#define MONSTROS_POR_FASE 4
 
 typedef struct {
     const char *nome;
@@ -66,6 +66,7 @@ typedef struct {
     double fator;            /* escala de dificuldade da fase */
     int itemObtido;          /* 1 = ja passou pela casa de Missao */
     int chefeDerrotado;      /* 1 = missao cumprida */
+    int monstroUsado[MONSTROS_POR_FASE];   /* 1 = ja apareceu nesta fase */
 } Fase;
 
 #endif

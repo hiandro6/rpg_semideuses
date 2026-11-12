@@ -11,6 +11,11 @@ static void definirFase(Fase *f, const char *nome, const char *historia,
     f->fator = fator;
     f->itemObtido = 0;
     f->chefeDerrotado = 0;
+    
+    int i;
+    for (i = 0; i < MONSTROS_POR_FASE; i++) {
+        f->monstroUsado[i] = 0;
+    }
 }
 
 void inicializarFases(Fase fases[]) {
