@@ -5,20 +5,10 @@
 #include "combate.h"
 #include "monstro.h"
 #include "fase.h"
-
-/* Descarta o que sobrou na linha digitada (ex.: o Enter depois do scanf) */
-static void limparBuffer(void) {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) { }
-}
-
-static void pausar(const char *msg) {
-    printf("%s", msg);
-    limparBuffer();
-}
+#include "interface.h"
 
 static void escolherPersonagem(Personagem *p) {
-    int op = 0, c;
+    int op, c;
 
     printf("=== ESCOLHA SEU SEMIDEUS ===\n\n");
     for (c = FILHO_POSEIDON; c <= FILHO_HADES; c++) {
@@ -26,16 +16,14 @@ static void escolherPersonagem(Personagem *p) {
         printf("[%d] ", c);
         mostrarPersonagem(p);
     }
-    do {
-        printf("Escolha (1-3): ");
-        if (scanf("%d", &op) != 1) {
-            scanf("%*s");
-            op = 0;
-        }
-        limparBuffer();
-    } while (op < 1 || op > 3);
-
+    op = lerInteiro("Escolha (1-3): ", 1, 3);
     criarPersonagem(p, (ClassePersonagem)op);
+}
+
+/* Linha de resumo mostrada depois de cada evento */
+static void mostrarResumo(const Personagem *p) {
+    printf("[Vida: %d/%d | Nivel: %d | XP: %d/%d]\n",
+           p->vida, p->vidaMax, p->nivel, p->xp, p->nivel * 50);
 }
 
 /* Entrega o item da fase (casa de Missao) */
@@ -47,6 +35,7 @@ static void pegarItem(Fase *f) {
     f->itemObtido = 1;
     printf("Voce encontrou o %s! Agora o chefe pode ser enfrentado.\n", f->item);
 }
+
 /* Executa o que acontece na casa em que o heroi caiu */
 static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
                            int *posicao, int numeroFase) {
@@ -71,7 +60,6 @@ static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
         }
 
         r = combate(p, &m);
-        limparBuffer();   /* o combate termina logo apos um scanf */
 
         if (r == COMBATE_VENCEU) {
             printf("Recompensa: %d XP!\n", m.xpRecompensa);
@@ -98,15 +86,13 @@ static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
     case CASA_CURA:
         cura = p->vidaMax * 30 / 100;
         curar(p, cura);
-        printf("Uma fonte sagrada restaura sua vida! (vida: %d/%d)\n",
-               p->vida, p->vidaMax);
+        printf("Uma fonte sagrada restaura sua vida!\n");
         break;
     case CASA_ARMADILHA:
         dano = 10 + 5 * numeroFase;
         if (dano > p->vida - 1) dano = p->vida - 1;   /* nunca mata */
         receberDano(p, dano);
-        printf("Armadilha! Voce perde %d de vida. (vida: %d/%d)\n",
-               dano, p->vida, p->vidaMax);
+        printf("Armadilha! Voce perde %d de vida.\n", dano);
         break;
     default:
         printf("Nada acontece por aqui.\n");
@@ -140,6 +126,7 @@ int main(void) {
 
         executarEvento(&heroi, &fases[faseAtual], tabuleiro,
                        &posicao, faseAtual);
+        mostrarResumo(&heroi);
 
         if (heroi.vida <= 0) break;
 
@@ -147,6 +134,7 @@ int main(void) {
             printf("\nMISSAO CUMPRIDA: %s\n", fases[faseAtual].nome);
             avancarFase(&faseAtual, &posicao);
             if (faseAtual < NUM_FASES) {
+                descansarEntreFases(&heroi, faseAtual);
                 mostrarMissao(&fases[faseAtual], faseAtual + 1);
             }
         }
