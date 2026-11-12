@@ -4,6 +4,6 @@
 #include "tipos.h"
 
 void criarMonstro(Monstro *m, int fase, int indice, double fator);
-void sortearMonstroComum(Monstro *m, int fase, double fator);
+void sortearMonstroComum(Monstro *m, int fase, double fator, int usado[]);
 
 #endif
