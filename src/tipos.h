@@ -55,4 +55,17 @@ typedef enum {
     COMBATE_FUGIU
 } ResultadoCombate;
 
+#define NUM_FASES 3
+#define MONSTROS_POR_FASE 3
+
+typedef struct {
+    const char *nome;
+    const char *historia;
+    const char *missao;
+    const char *item;        /* item entregue na casa de Missao */
+    double fator;            /* escala de dificuldade da fase */
+    int itemObtido;          /* 1 = ja passou pela casa de Missao */
+    int chefeDerrotado;      /* 1 = missao cumprida */
+} Fase;
+
 #endif
