@@ -47,13 +47,13 @@ static void pegarItem(Fase *f) {
     f->itemObtido = 1;
     printf("Voce encontrou o %s! Agora o chefe pode ser enfrentado.\n", f->item);
 }
-
 /* Executa o que acontece na casa em que o heroi caiu */
 static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
                            int *posicao, int numeroFase) {
     Monstro m;
     ResultadoCombate r;
     int ehChefe = (*posicao == TAM_TABULEIRO - 1);
+    int dano, cura;
 
     switch (tabuleiro[*posicao].tipo) {
     case CASA_COMBATE:
@@ -73,25 +73,40 @@ static void executarEvento(Personagem *p, Fase *f, const Casa tabuleiro[],
         r = combate(p, &m);
         limparBuffer();   /* o combate termina logo apos um scanf */
 
-        if (r == COMBATE_VENCEU && ehChefe) {
-            f->chefeDerrotado = 1;
+        if (r == COMBATE_VENCEU) {
+            printf("Recompensa: %d XP!\n", m.xpRecompensa);
+            ganharXP(p, m.xpRecompensa);
+            aplicarBonusAleatorio(p);
+            if (ehChefe) f->chefeDerrotado = 1;
         } else if (r == COMBATE_FUGIU && ehChefe) {
             printf("O chefe continua te esperando. Voce volta uma casa.\n");
             *posicao = TAM_TABULEIRO - 2;
         }
-        /* Recompensa de XP e bonus: Etapa 5 */
         break;
     case CASA_MISSAO:
         pegarItem(f);
         break;
     case CASA_TESOURO:
-        printf("Tesouro! (efeito sera implementado na Etapa 5)\n");
+        printf("Voce encontrou um bau!\n");
+        if (rolarDado(2) == 1) {
+            aplicarBonusAleatorio(p);
+        } else {
+            printf("Ouro e reliquias valem %d XP!\n", 20 * (numeroFase + 1));
+            ganharXP(p, 20 * (numeroFase + 1));
+        }
         break;
     case CASA_CURA:
-        printf("Fonte de cura! (efeito sera implementado na Etapa 5)\n");
+        cura = p->vidaMax * 30 / 100;
+        curar(p, cura);
+        printf("Uma fonte sagrada restaura sua vida! (vida: %d/%d)\n",
+               p->vida, p->vidaMax);
         break;
     case CASA_ARMADILHA:
-        printf("Armadilha! (efeito sera implementado na Etapa 5)\n");
+        dano = 10 + 5 * numeroFase;
+        if (dano > p->vida - 1) dano = p->vida - 1;   /* nunca mata */
+        receberDano(p, dano);
+        printf("Armadilha! Voce perde %d de vida. (vida: %d/%d)\n",
+               dano, p->vida, p->vidaMax);
         break;
     default:
         printf("Nada acontece por aqui.\n");
