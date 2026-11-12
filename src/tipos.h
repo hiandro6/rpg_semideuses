@@ -34,4 +34,25 @@ typedef struct {
     const char *nome;   /* texto exibido para o jogador */
 } Casa;
 
+
+typedef struct {
+    const char *nome;
+    const char *descricao;
+    int vida, ataque, defesa, nivel;
+    int xpRecompensa;
+} Monstro;
+
+typedef enum {
+    ACAO_ATACAR = 1,
+    ACAO_DEFENDER,
+    ACAO_HABILIDADE,
+    ACAO_FUGIR
+} AcaoCombate;
+
+typedef enum {
+    COMBATE_VENCEU,
+    COMBATE_MORREU,
+    COMBATE_FUGIU
+} ResultadoCombate;
+
 #endif
