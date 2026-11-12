@@ -87,3 +87,26 @@ void curar(Personagem *p, int quantidade) {
     p->vida += quantidade;
     if (p->vida > p->vidaMax) p->vida = p->vidaMax;
 }
+
+/* Conta a lore da classe escolhida e destaca pontos fortes e fracos */
+void mostrarApresentacao(const Personagem *p) {
+    printf("\nVoce escolheu o %s!\n", p->nome);
+    switch (p->classe) {
+    case FILHO_POSEIDON:
+        printf("Criado a beira-mar, ele carrega a furia das tempestades no sangue.\n");
+        printf("Resistente e forte, e o mais duro de derrubar, mas nao e muito agil\n");
+        printf("nem esperto. Sua Onda Gigante e um golpe devastador!\n");
+        break;
+    case FILHA_ATENA:
+        printf("Estrategista nata, ela vence as batalhas antes mesmo de lutar.\n");
+        printf("Nao aguenta tanto dano quanto os irmaos, mas sua inteligencia\n");
+        printf("e enorme. A Estrategia Perfeita ignora a defesa de qualquer inimigo!\n");
+        break;
+    default: /* FILHO_HADES */
+        printf("Sombrio e solitario, ele cresceu entre os espiritos do Submundo.\n");
+        printf("Nao e um bom defensor e tem pouca vida, mas seu Chamado dos Mortos\n");
+        printf("e uma habilidade incrivel: causa dano e rouba a vida do inimigo!\n");
+        break;
+    }
+    printf("\n");
+}

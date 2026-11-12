@@ -10,5 +10,5 @@ void ganharXP(Personagem *p, int xp);
 void subirNivel(Personagem *p);
 void aplicarBonusAleatorio(Personagem *p);
 void curar(Personagem *p, int quantidade);
-
+void mostrarApresentacao(const Personagem *p);
 #endif
