@@ -7,5 +7,5 @@ void inicializarFases(Fase fases[]);
 void mostrarMissao(const Fase *f, int numero);
 int missaoCumprida(const Fase *f);
 void avancarFase(int *faseAtual, int *posicao);
-
+void descansarEntreFases(Personagem *p, int novaFase);
 #endif

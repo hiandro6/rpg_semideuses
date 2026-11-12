@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "fase.h"
+#include "personagem.h"
 
 static void definirFase(Fase *f, const char *nome, const char *historia,
                         const char *missao, const char *item, double fator) {
@@ -44,4 +45,20 @@ int missaoCumprida(const Fase *f) {
 void avancarFase(int *faseAtual, int *posicao) {
     (*faseAtual)++;
     *posicao = 0;
+}
+
+/* Local de descanso na viagem até cada fase (índice = fase de destino) */
+static const char *transporte[NUM_FASES] = {
+    "",
+    "no convés de um navio rumo ao Mar dos Monstros",
+    "na barca de Caronte, cruzando o rio Estige"
+};
+
+/* Recupera 15% da vida máxima antes de começar a nova fase */
+void descansarEntreFases(Personagem *p, int novaFase) {
+    int cura = p->vidaMax * 15 / 100;
+    curar(p, cura);
+    printf("\n%s descansa um pouco %s antes do seu proximo desafio.\n",
+           p->nome, transporte[novaFase]);
+    printf("Vida recuperada: +%d (vida: %d/%d)\n", cura, p->vida, p->vidaMax);
 }
