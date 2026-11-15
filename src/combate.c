@@ -4,8 +4,8 @@
 #include "interface.h"
 
 #define RECARGA_HABILIDADE 3
-#define DADO_FUGA_MIN 4        /* d6 >= 4 => 50% de chance */
-#define DELAY_TURNO 1.0        /* segundos entre as ações (0 para testar rápido) */
+#define DADO_FUGA_MIN 4        
+#define DELAY_TURNO 2.0
 
 /* ---------- Aplicação de dano (via ponteiro) ---------- */
 
